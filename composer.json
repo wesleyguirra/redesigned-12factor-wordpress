@@ -1,0 +1,80 @@
+{
+	"repositories": [
+		{
+			"type": "composer",
+			"url": "https://wpackagist.org"
+		},
+		{
+			"type": "composer",
+			"url": "https://wp-languages.github.io"
+		},
+		{
+			"type": "path",
+			"url": "plugins/*/"
+		},
+		{
+			"type": "path",
+			"url": "themes/*/"
+		},
+		{
+			"type": "path",
+			"url": "languages/*/"
+		}
+	],
+	"extra": {
+		"wordpress-install-dir": "wordpress",
+		"installer-paths": {
+			"wp-content/mu-plugins/{$name}/": ["type:wordpress-muplugin"],
+			"wp-content/plugins/{$name}/": ["type:wordpress-plugin"],
+			"wp-content/themes/{$name}/": ["type:wordpress-theme"],
+			"wp-content/languages/themes/": ["type:wordpress-theme-language"]
+		},
+		"dropin-paths": {
+			"wp-content/languages/": ["vendor:koodimonni-language"],
+			"wp-content/languages/plugins/": ["vendor:koodimonni-plugin-language"],
+			"wp-content/languages/themes/": ["vendor:koodimonni-theme-language"]
+		}
+	},
+	"require": {
+		"ext-gd": "*",
+		"johnpbloch/wordpress": "*",
+		"koodimonni-language/core-pt_br": "*",
+		"wpackagist-plugin/amazon-web-services": "*",
+		"wpackagist-plugin/amazon-s3-and-cloudfront": "*",
+		"wpackagist-plugin/sendgrid-email-delivery-simplified": "*",
+		"wpackagist-plugin/tiny-compress-images": "*",
+		"wpackagist-plugin/gutenberg": "*",
+		"wpackagist-plugin/jetpack": "*",
+		"wpackagist-plugin/astra-sites": "*",
+		"wpackagist-plugin/elementor": "*",
+		"wpackagist-plugin/custom-icons-for-elementor": "*",
+		"wp-cli/wp-cli": "^1.1.0",
+		"wpackagist-theme/astra": "*",
+		"wesleyguirra/astra-child": "*"
+	},
+	"scripts": {
+		"wordpress-setup-core-install-prompt": "wp core install --prompt",
+		"wordpress-setup-core-install": "wp core install --skip-email",
+		"wordpress-setup-clear-home": "wp option delete home || true",
+		"wordpress-setup-configure-s3": "echo '{\"domain\":\"path\",\"copy-to-s3\":\"1\",\"serve-from-s3\":\"1\",\"ssl\":\"request\"}' | wp option add tantan_wordpress_s3 --format=json",
+		"wordpress-setup-enable-plugins": "wp plugin activate amazon-web-services amazon-s3-and-cloudfront tiny-compress-images sendgrid-email-delivery-simplified gutenberg jetpack elementor astra-sites custom-icons-for-elementor",
+		"wordpress-setup-permalink-structure": "wp rewrite structure '/%postname%/' || true",
+		"wordpress-setup": [
+			"@wordpress-setup-core-install-prompt",
+			"@wordpress-setup-finalize"
+		],
+		"wordpress-setup-finalize": [
+			"@wordpress-setup-clear-home",
+			"@wordpress-setup-configure-s3",
+			"@wordpress-setup-enable-plugins",
+			"@wordpress-setup-permalink-structure"
+		],
+		"wordpress-setup-demo-theme": "wp theme activate astra-child",
+		"wordpress-setup-welcome-post": [
+			"echo 'It works!', | wp post update 1 - --post_title=\"Welcome to WordPress on Heroku\""
+		]
+	},
+	"require-dev": {
+		"heroku/heroku-buildpack-php": "*"
+	}
+}

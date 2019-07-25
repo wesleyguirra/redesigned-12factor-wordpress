@@ -1,0 +1,6 @@
+.DS_Store
+.idea/
+/vendor/
+/wordpress/
+/wp-content/
+nginx-wordpress.conf
